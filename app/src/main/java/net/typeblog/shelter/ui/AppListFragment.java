@@ -393,6 +393,10 @@ public class AppListFragment extends BaseFragment {
                 Intent intent = new Intent(DummyActivity.UNFREEZE_AND_LAUNCH);
                 intent.setComponent(new ComponentName(getContext(), DummyActivity.class));
                 intent.putExtra("packageName", mSelectedApp.getPackageName());
+                boolean shouldFreeze = net.typeblog.shelter.util.SettingsManager.getInstance().getHideWorkProfileAppsEnabled() ||
+                        (net.typeblog.shelter.util.SettingsManager.getInstance().getAutoFreezeServiceEnabled() &&
+                                LocalStorageManager.getInstance().stringListContains(LocalStorageManager.PREF_AUTO_FREEZE_LIST_WORK_PROFILE, mSelectedApp.getPackageName()));
+                intent.putExtra("shouldFreeze", shouldFreeze);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 DummyActivity.registerSameProcessRequest(intent);
                 startActivity(intent);

@@ -152,10 +152,11 @@ public class ShelterService extends Service {
                             mAdminComponent,
                             app.getPackageName());
 
-                    // Also set the hidden state to false.
+                    // Also set the hidden state according to preference.
+                    boolean hide = net.typeblog.shelter.util.SettingsManager.getInstance().getHideWorkProfileAppsEnabled();
                     mPolicyManager.setApplicationHidden(
                             mAdminComponent,
-                            app.getPackageName(), false);
+                            app.getPackageName(), hide);
 
                     callback.callback(Activity.RESULT_OK);
                 } else {

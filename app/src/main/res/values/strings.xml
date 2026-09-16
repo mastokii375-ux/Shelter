@@ -73,6 +73,8 @@
     <string name="settings_block_contacts_searching_desc">Deny access from main profile to contacts inside work profile.</string>
     <string name="settings_payment_stub">Payment Service Stub</string>
     <string name="settings_payment_stub_desc">Enable a fake NFC payment service in the main profile, so that the "contactless payments" option under Settings - NFC becomes enabled to allow you to choose a payment app inside the work profile. This works around an Android bug that makes it impossible to select a payment app inside the work profile if none is available in the main profile.</string>
+    <string name="settings_hide_work_profile_apps">Hide Apps in Work Profile Launcher</string>
+    <string name="settings_hide_work_profile_apps_desc">Automatically hide installed or cloned apps in work profile so they are only visible and accessible inside Shelter.</string>
     <string name="settings_services">Services</string>
     <string name="settings_auto_freeze_service">Auto Freeze Service</string>
     <string name="settings_auto_freeze_service_desc">When the screen is locked, automatically freeze apps launched from \"Unfreeze &amp; Launch Shortcut\".</string>

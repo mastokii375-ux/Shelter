@@ -219,6 +219,12 @@ public class DummyActivity extends Activity {
                     startActivity((Intent) intent.getExtras().get(Intent.EXTRA_INTENT));
                     break;
                 case PackageInstaller.STATUS_SUCCESS:
+                    String pkg = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME);
+                    if (pkg != null && mIsProfileOwner && SettingsManager.getInstance().getHideWorkProfileAppsEnabled()) {
+                        mPolicyManager.setApplicationHidden(
+                                new ComponentName(this, ShelterDeviceAdminReceiver.class),
+                                pkg, true);
+                    }
                     appInstallFinished(Activity.RESULT_OK);
                     break;
                 default:
@@ -444,6 +450,18 @@ public class DummyActivity extends Activity {
         // the other profile. We don't know, but just clean it.
         FileProviderProxy.clearForwardProxy();
 
+        if (resultCode == Activity.RESULT_OK && mIsProfileOwner && SettingsManager.getInstance().getHideWorkProfileAppsEnabled()) {
+            String pkg = null;
+            if (getIntent().hasExtra("package")) {
+                pkg = getIntent().getStringExtra("package");
+            }
+            if (pkg != null) {
+                mPolicyManager.setApplicationHidden(
+                        new ComponentName(this, ShelterDeviceAdminReceiver.class),
+                        pkg, true);
+            }
+        }
+
         if (!getIntent().hasExtra("callback")) return;
 
         // Send the result code back to the caller
@@ -471,10 +489,11 @@ public class DummyActivity extends Activity {
             Utility.transferIntentToProfile(this, intent);
             String packageName = getIntent().getStringExtra("packageName");
             intent.putExtra("packageName", packageName);
-            intent.putExtra("shouldFreeze",
-                    SettingsManager.getInstance().getAutoFreezeServiceEnabled() &&
+            boolean shouldFreeze = SettingsManager.getInstance().getHideWorkProfileAppsEnabled() ||
+                    (SettingsManager.getInstance().getAutoFreezeServiceEnabled() &&
                             LocalStorageManager.getInstance()
                                 .stringListContains(LocalStorageManager.PREF_AUTO_FREEZE_LIST_WORK_PROFILE, packageName));
+            intent.putExtra("shouldFreeze", shouldFreeze);
             if (getIntent().hasExtra("linkedPackages")) {
                 // Multiple apps should be unfrozen here
                 String[] packages = getIntent().getStringExtra("linkedPackages").split(",");
@@ -483,9 +502,10 @@ public class DummyActivity extends Activity {
                 for (int i = 0; i < packages.length; i++) {
                     // Apps in linkedPackages may also need to be auto-frozen
                     // thus, we loop through them and fetch the settings
-                    packagesShouldFreeze[i] = SettingsManager.getInstance().getAutoFreezeServiceEnabled() &&
-                            LocalStorageManager.getInstance()
-                                    .stringListContains(LocalStorageManager.PREF_AUTO_FREEZE_LIST_WORK_PROFILE, packages[i]);
+                    packagesShouldFreeze[i] = SettingsManager.getInstance().getHideWorkProfileAppsEnabled() ||
+                            (SettingsManager.getInstance().getAutoFreezeServiceEnabled() &&
+                                    LocalStorageManager.getInstance()
+                                            .stringListContains(LocalStorageManager.PREF_AUTO_FREEZE_LIST_WORK_PROFILE, packages[i]));
                 }
                 intent.putExtra("linkedPackages", packages);
                 intent.putExtra("linkedPackagesShouldFreeze", packagesShouldFreeze);

@@ -129,6 +129,15 @@ public class SettingsManager {
         applyPaymentStub();
     }
 
+    public boolean getHideWorkProfileAppsEnabled() {
+        return mStorage.getBoolean(LocalStorageManager.PREF_HIDE_WORK_PROFILE_APPS);
+    }
+
+    public void setHideWorkProfileAppsEnabled(boolean enabled) {
+        mStorage.setBoolean(LocalStorageManager.PREF_HIDE_WORK_PROFILE_APPS, enabled);
+        syncSettingsToProfileBool(LocalStorageManager.PREF_HIDE_WORK_PROFILE_APPS, enabled);
+    }
+
     // Enable / disable the payment stub component based on settings in local storage
     public void applyPaymentStub() {
         boolean enabled = mStorage.getBoolean(LocalStorageManager.PREF_PAYMENT_STUB);
